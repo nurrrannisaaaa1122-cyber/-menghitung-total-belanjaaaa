@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Total Belanja Rainbow</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 25px 15px;
+    background: linear-gradient(
+        135deg,
+        #ff9a9e,
+        #ffd6a5,
+        #fdffb6,
+        #caffbf,
+        #9bf6ff,
+        #bdb2ff,
+        #ffc6ff
+    );
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: white;
+    width: 100%;
+    max-width: 500px;
+    padding: 25px;
+    border-radius: 25px;
+    box-shadow: 0 8px 25px #0002;
+    text-align: center;
+}
+
+.sticker {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    color: #a64ac9;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #888;
+    margin-bottom: 25px;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    margin: 7px 0;
+    border: 2px solid #e5c2f5;
+    border-radius: 12px;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #a64ac9;
+}
+
+button {
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.04);
+}
+
+.add {
+    width: 100%;
+    margin-top: 12px;
+    color: white;
+    background: linear-gradient(90deg, #ff70a6, #a66cff, #55c9e9);
+}
+
+h2 {
+    color: #a64ac9;
+    margin-top: 25px;
+}
+
+.item {
+    background: #fff0fa;
+    border-left: 5px solid #c77dff;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 12px 0;
+    text-align: left;
+}
+
+.item p {
+    margin: 7px 0;
+    color: #555;
+}
+
+.delete {
+    background: #ff6b81;
+    color: white;
+    margin-top: 8px;
+}
+
+.total {
+    background: linear-gradient(90deg, #ffc6ff, #bdb2ff, #9bf6ff);
+    padding: 18px;
+    border-radius: 15px;
+    margin-top: 20px;
+    color: #54266f;
+}
+
+.total p {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.footer {
+    margin-top: 20px;
+    color: #aaa;
+    font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="sticker">🌈 🛍️ ✨</div>
+
+    <h1>TOTAL BELANJA</h1>
+
+    <p class="subtitle">
+        Selamat datang! Yuk, hitung total belanja kamu 💖
+    </p>
+
+    <input type="text" id="nama"
+    placeholder="Nama barang">
+
+    <input type="number" id="jumlah"
+    placeholder="Jumlah barang" min="1">
+
+    <input type="number" id="harga"
+    placeholder="Harga satuan barang" min="0">
+
+    <button class="add" onclick="tambahBarang()">
+        + Tambahkan Barang 🛒
+    </button>
+
+    <h2>🌸 Daftar Belanja 🌸</h2>
+
+    <div id="daftar">
+        <p>Belum ada barang yang ditambahkan.</p>
+    </div>
+
+    <div class="total">
+        <h3>💰 TOTAL KESELURUHAN</h3>
+        <p id="total">Rp 0</p>
+    </div>
+
+    <div class="footer">
+        🌈 Happy Shopping! Terima kasih sudah berbelanja 💕
+    </div>
+
+</div>
+
+<script>
+
+let totalBelanja = 0;
+
+function formatRupiah(angka) {
+    return "Rp " + angka.toLocaleString("id-ID");
+}
+
+function tambahBarang() {
+
+    let nama = document.getElementById("nama").value.trim();
+    let jumlah = Number(document.getElementById("jumlah").value);
+    let harga = Number(document.getElementById("harga").value);
+
+    if (nama === "" || jumlah <= 0 ||
+        harga < 0 ||
+        document.getElementById("jumlah").value === "" ||
+        document.getElementById("harga").value === "") {
+
+        alert("Silakan isi semua data barang dengan benar!");
+        return;
+    }
+
+    let subtotal = jumlah * harga;
+
+    let daftar = document.getElementById("daftar");
+
+    if (daftar.querySelector("p")) {
+        daftar.innerHTML = "";
+    }
+
+    let item = document.createElement("div");
+    item.className = "item";
+
+    item.innerHTML = `
+        <p><b>Nama Barang:</b> ${escapeHTML(nama)}</p>
+        <p><b>Jumlah:</b> ${jumlah}</p>
+        <p><b>Harga Satuan:</b> ${formatRupiah(harga)}</p>
+        <p><b>Total Harga:</b> ${formatRupiah(subtotal)}</p>
+        <button class="delete">Hapus ❌</button>
+    `;
+
+    item.querySelector(".delete").onclick = function() {
+        totalBelanja -= subtotal;
+        item.remove();
+
+        if (daftar.children.length === 0) {
+            daftar.innerHTML =
+                "<p>Belum ada barang yang ditambahkan.</p>";
+        }
+
+        document.getElementById("total").innerText =
+            formatRupiah(totalBelanja);
+    };
+
+    daftar.appendChild(item);
+
+    totalBelanja += subtotal;
+
+    document.getElementById("total").innerText =
+        formatRupiah(totalBelanja);
+
+    document.getElementById("nama").value = "";
+    document.getElementById("jumlah").value = "";
+    document.getElementById("harga").value = "";
+}
+
+function escapeHTML(teks) {
+    return teks.replace(/[&<>"']/g, function(karakter) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        }[karakter];
+    });
+}
+
+</script>
+
+</body>
+</html>
